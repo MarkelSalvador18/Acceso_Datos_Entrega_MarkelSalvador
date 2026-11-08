@@ -16,9 +16,13 @@ namespace _4VGymEF.Repositories
         }
         
         // Método para obtener todos los tipos de actividades
-        public IEnumerable<ActivityType> GetAll()
+        public IEnumerable<ActivityTypeCreateDto> GetAll()
         {
-            return _context.ActivityTypes.ToList();
+        var lista = _context.ActivityTypes.ToList();
+            return lista.Select(l => new ActivityTypeCreateDto 
+            { Id = l.Id, 
+                Name = l.Name, 
+                NumberMonitors = l.NumberMonitors}).ToList();
         }
 
 
@@ -29,9 +33,11 @@ namespace _4VGymEF.Repositories
         /// <returns>La entidad guardada con su ID autogenerado.</returns>
         public ActivityType Add(ActivityType activityType)
         {
-            _context.ActivityTypes.Add(activityType);
 
-            return activityType;
+            
+
+
+            
                 
         }
 
