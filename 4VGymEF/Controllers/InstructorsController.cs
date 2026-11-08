@@ -19,10 +19,10 @@ namespace _4VGymAPI.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<Instructor>), StatusCodes.Status200OK)]
+        [ProducesResponseType(typeof(IEnumerable<InstructorCreateDto>), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
-        public ActionResult<IEnumerable<Instructor>> GetInstructors([FromQuery] int? id, [FromQuery(Name = "first_initial")] string? firstInitial)
+        public ActionResult<List<InstructorCreateDto>> GetInstructors([FromQuery] int? id, [FromQuery(Name = "first_initial")] string? firstInitial)
         {
             try
             {
@@ -45,7 +45,7 @@ namespace _4VGymAPI.Controllers
                 }
 
                 // 3. Sin parámetros: devuelve todos los instructores
-                IEnumerable<Instructor> allInstructors = _repository.GetAll();
+                List<Instructor> allInstructors = _repository.ObtenerInstructoresDeBaseDeDatos();
                 return Ok(allInstructors);
             }
             catch (Exception ex)
@@ -61,10 +61,10 @@ namespace _4VGymAPI.Controllers
         private static readonly Regex EmailRegex = new Regex(@"^[^@\s]+@gmail.com", RegexOptions.Compiled);
 
         [HttpPost]
-        [ProducesResponseType(typeof(Instructor), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(InstructorCreateDto), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ErrorResponse), StatusCodes.Status500InternalServerError)]
-        public ActionResult<Instructor> CreateInstructor([FromBody] Instructor instructorNew)
+        public ActionResult<InstructorCreateDto> CreateInstructor([FromBody] InstructorCreateDto instructorNew)
         {
             try
             {
@@ -104,7 +104,7 @@ namespace _4VGymAPI.Controllers
 
 
                 // LLamamos al método para añadirlo en el repositorio
-                Instructor? instructor = _repository.Add(instructorNew, out ErrorResponse? errorResponse);
+                InstructorCreateDto? instructor = _repository.Add(instructorNew, out ErrorResponse? errorResponse);
                 if (errorResponse != null)
                 {
                     return BadRequest(errorResponse);
