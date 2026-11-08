@@ -1,6 +1,7 @@
 
 using _4VGymEF.Data;
 using _4VGymEF.Models;
+using _4VGymEF.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,7 +43,9 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 // Registrar el DbContext
 builder.Services.AddDbContext<GymDbContext>(options => options.UseSqlServer(connectionString));
 
-
+builder.Services.AddScoped<ActivityRepository>();
+builder.Services.AddScoped<ActivityTypeRepository>();
+builder.Services.AddScoped<InstructorRepository>();
 // Contruir la aplicacion
 var app = builder.Build();
 

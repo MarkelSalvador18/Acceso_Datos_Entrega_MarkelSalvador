@@ -18,18 +18,21 @@ namespace _4VGymEF.Repositories
 
         public List<ActivityCreateDto> GetAll()
         {
-            return _context.Activities.Select(a => new ActivityCreateDto {Id = a.Id, InstructorsId = a.Instructors.Select(i => i.Id).ToList()})
+            return _context.Activities.Select(
+                a => new ActivityCreateDto
+                {
+                    Id = a.Id,
+                    InstructorsId = a.Instructors
+                    .Select(i => i.Id).ToList()
+                }).ToList();
         }
 
         public ActivityCreateDto? Add(ActivityCreateDto activity, out List<ErrorResponse> errorResponse)
         {
 
             errorResponse = new List<ErrorResponse>();
-
-
-            ActivityType? activityType = _context.ActivityTypes.FirstOrDefault(a => a.Id == activity.ActivityTypeId);
-
-
+            ActivityType? activityType = _context.ActivityTypes.FirstOrDefault(
+                a => a.Id == activity.ActivityTypeId);
 
             if (activityType == null)
             {
@@ -40,45 +43,44 @@ namespace _4VGymEF.Repositories
             {
                 for (int i = 0; i < activity.InstructorsId.Count; i++)
                 {
-                    if (_context.Intructors.Any(i => i.Id == i.Id))
+                    if (!_context.Intructors.Any(i => i.Id == i.Id))
                     {
-                        bool existeMonitor = _context.Activities.Any(
-                            m => activity.DateStart < m.DateEnd
-                            && activity.DateEnd > m.DateStart && m.l);
+                        errorResponse.Add(new ErrorResponse(40, "El monitor con ese id no existe"));
                     }
-                    
+                   
                 }
             }
-            // Validacion 2: Que existan todos los monitores
-            errorResponse =
-                activity.InstructorsId
-                        .Where(instructorId => _activityType.GetById(instructorId) == null)
-                        .Select(instructorIdNotFound =>
-                        {
-                            return new ErrorResponse(35, "El instructor: " + instructorIdNotFound + " no existe");
-                        })
-                        .ToList();
+
+            bool existeMonitor = _context.Activities.Any(
+                            m => activity.DateStart < m.DateEnd
+                            && activity.DateEnd > m.DateStart && m.Instructors.Any(
+                                i => activity.InstructorsId.Contains(i.Id)));
+
+            if (existeMonitor)
+            {
+                errorResponse.Add(new ErrorResponse(41, "Ya existe ese monitor a esa actividad"));
+
+            }
             if (errorResponse.Count > 0)
             {
                 return null;
             }
-            ActivityCreateDto activityType1 = new ActivityCreateDto
-            {
-                Id = activity.Id,
-                InstructorsId = activity.InstructorsId,
-                ActivityTypeId = activity.ActivityTypeId,
-                DateEnd = activity.DateEnd,
-                DateStart = activity.DateStart,
-                MaxParticipants = activity.MaxParticipants
-                
 
-                
+
+            Activity activityNueva = new Activity
+            {
+                Id = (int)activity.ActivityTypeId,
+                DateStart = activity.DateStart,
+                DateEnd = activity.DateEnd,
+                MaxParticipants = activity.MaxParticipants,
+                Instructors = _context.Intructors.Where(
+                    i => activity.InstructorsId!.
+                    Contains(i.Id)).ToList()
+
+
 
             };
-
-            _activityType.Add(activity);
-
-
+            _context.Activities.Add(activityNueva);
             return activity;
         }
     }
