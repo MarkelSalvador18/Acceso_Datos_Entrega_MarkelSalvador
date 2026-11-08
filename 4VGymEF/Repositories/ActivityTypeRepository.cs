@@ -18,8 +18,8 @@ namespace _4VGymEF.Repositories
         // Método para obtener todos los tipos de actividades
         public IEnumerable<ActivityTypeCreateDto> GetAll()
         {
-        var lista = _context.ActivityTypes.ToList();
-            return lista.Select(l => new ActivityTypeCreateDto 
+        var listaActivityType = _context.ActivityTypes.ToList();
+            return listaActivityType.Select(l => new ActivityTypeCreateDto 
             { Id = l.Id, 
                 Name = l.Name, 
                 NumberMonitors = l.NumberMonitors}).ToList();
@@ -31,22 +31,38 @@ namespace _4VGymEF.Repositories
         /// </summary>
         /// <param name="activityType">Objeto con los datos a guardar (sin ID o con ID no asignado).</param>
         /// <returns>La entidad guardada con su ID autogenerado.</returns>
-        public ActivityType Add(ActivityType activityType)
+        public ActivityTypeCreateDto Add(ActivityTypeCreateDto activityType)
         {
+            ActivityType activityType1 = new ActivityType
+            {
+                Name = activityType.Name,
+                NumberMonitors = activityType.NumberMonitors
+            };
+            var aniadirTipoActividad = _context.ActivityTypes.Add(activityType1);
 
+            return activityType;
             
-
+           
 
             
                 
         }
 
         // Método para obtener todos los tipos de actividades por Nombre
-        public ActivityType? GetByName(string name)
+        public ActivityTypeCreateDto? GetByName(string name)
         {
+
            var pasarNombre = _context.ActivityTypes.SingleOrDefault(n =>
             n.Name.Equals(name));
-            return pasarNombre;
+            ActivityTypeCreateDto activityType1 = new ActivityTypeCreateDto
+            {
+                Id = pasarNombre.Id,
+                Name = pasarNombre.Name,
+                NumberMonitors = pasarNombre.NumberMonitors
+                
+            };
+            return activityType1;
+           
 
         }
 
@@ -54,6 +70,13 @@ namespace _4VGymEF.Repositories
         {
             var pasarId = _context.ActivityTypes.SingleOrDefault(i => 
             i.Equals(id));
+            ActivityTypeCreateDto activityType1 = new ActivityTypeCreateDto
+            {
+                Id = pasarId.Id,
+                Name = pasarId.Name,
+                NumberMonitors = pasarId.NumberMonitors
+
+            };
             return pasarId;
         }
 
